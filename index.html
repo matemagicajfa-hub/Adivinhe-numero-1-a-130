@@ -1,10 +1,13 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
   <meta charset="utf-8"/>
   <title>Adivinhe o Número - Matemágica</title>
   <style>
     body {
+      position: relative;
+      overflow: hidden;
       font-family: Arial, sans-serif;
       padding: 20px;
       max-width: 1000px;
@@ -74,6 +77,28 @@
     input[type="radio"]:checked + label {
       background: #ff7043;
     }
+    .estrelas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      background: transparent;
+      pointer-events: none;
+    }
+    .estrela {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: white;
+      border-radius: 50%;
+      animation: piscar 2s infinite alternate;
+    }
+    @keyframes piscar {
+      from { opacity: 0.2; }
+      to { opacity: 1; }
+    }
     .resultado {
       margin-top: 30px;
       font-size: 1.6rem;
@@ -119,6 +144,7 @@
   </style>
 </head>
 <body>
+  <div class="estrelas"></div>
   <h2>✨ Matemágica - Adivinhe o Número (1-130) ✨</h2>
 
   <div class="avatar-box">
@@ -748,7 +774,17 @@
       synth.speak(utterance);
     }
 
-    const form = document.getElementById('customForm');
+    const estrelasContainer = document.querySelector('.estrelas');
+for (let i = 0; i < 80; i++) {
+  const estrela = document.createElement('div');
+  estrela.classList.add('estrela');
+  estrela.style.top = Math.random() * 100 + 'vh';
+  estrela.style.left = Math.random() * 100 + 'vw';
+  estrela.style.animationDuration = (1 + Math.random() * 3) + 's';
+  estrelasContainer.appendChild(estrela);
+}
+
+const form = document.getElementById('customForm');
     const btn = document.getElementById('btnEnviar');
     const resultado = document.getElementById('resultado');
 
@@ -776,14 +812,38 @@
       });
 
       if (numero > 0) {
-        resultado.textContent = `🎉 O número que você pensou é: ${numero}`;
+        confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+      resultado.innerHTML = `
+    🎩 <strong>O número que você pensou é o ${numero}!</strong><br><br>
+    🙌 Agradecemos a sua participação.<br>
+    👨‍🏫 Professores: Rafael Oliveira e Ronaldo Soares<br><br>
+    <button onclick="limparFormulario()" class="enviar">🔄 Participar novamente</button>
+  `;
       } else {
         resultado.textContent = "Selecione Sim/Não em todas as perguntas!";
         return;
       }
 
       form.submit();
+    }
+
+    function limparFormulario() {
+      form.reset();
+      resultado.textContent = 'Nenhum número escolhido ainda';
+    }
     });
+  </script>
+
+  <!-- VLibras Plugin -->
+  <div vw class="enabled">
+    <div vw-access-button class="active"></div>
+    <div vw-plugin-wrapper>
+      <div class="vw-plugin-top-wrapper"></div>
+    </div>
+  </div>
+  <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+  <script>
+    new window.VLibras.Widget('https://vlibras.gov.br/app');
   </script>
 </body>
 </html>
