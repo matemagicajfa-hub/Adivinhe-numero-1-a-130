@@ -206,7 +206,7 @@
     </label>
   </div>
   <audio id="musicaAmbiente" src="musica-ambiente.mp3" loop preload="auto"></audio>
-    <button onclick="iniciarJogo()" class="enviar">🚀 Começar Matemágica</button>
+    <button id="startButton" onclick="iniciarJogo()" class="enviar">🚀 Começar Matemágica</button>
   </div>
   <div class="progresso">
     <div id="progressoTexto">Pergunta 1 de 8</div>
@@ -231,7 +231,7 @@
 
   <form id="customForm" method="POST"
         action="https://docs.google.com/forms/d/e/1FAIpQLScp_gUPeLbntdaivu9C7P3oIMCG1o8vtYqKq2FO8jMRmpXnkg/formResponse"
-        target="hidden_iframe">
+        target="hidden_iframe" style="display:none;" >
     
     <!-- Apenas Nome completo -->
     <div class="pergunta">
@@ -884,6 +884,15 @@ const musica = document.getElementById('musicaAmbiente');
 const toggleMusica = document.getElementById('toggleMusica');
 
 if (toggleMusica) {
+  toggleMusica.addEventListener('click', function() {
+    if (this.checked) {
+      musica.play().catch(e => console.log("Autoplay bloqueado, usuário precisa interagir."));
+    } else {
+      musica.pause();
+      musica.currentTime = 0;
+    }
+  });
+}
   toggleMusica.addEventListener('change', function() {
     if (this.checked) {
       musica.play();
@@ -894,26 +903,7 @@ if (toggleMusica) {
   });
 }
 
-function iniciarJogo() {
-  const telaInicial = document.getElementById('telaInicial');
-  const form = document.getElementById('customForm');
-  const musica = document.getElementById('musicaAmbiente');
-
-  if (telaInicial) telaInicial.style.display = 'none';
-  if (form) form.style.display = 'block';
-
-  // Parar música se estiver tocando
-  if (musica && !musica.paused) {
-    musica.pause();
-    musica.currentTime = 0;
-  }
 }
-function iniciarJogo_old() {
-  // Parar música ao iniciar jogo
-  if (musica) {
-    musica.pause();
-    musica.currentTime = 0;
-  }
   document.getElementById('telaInicial').style.display = 'none';
   document.getElementById('customForm').style.display = 'block';
 }
@@ -982,6 +972,77 @@ form.style.display = 'none';
   <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
   <script>
     new window.VLibras.Widget('https://vlibras.gov.br/app');
-  </script>
+  
+
+function iniciarJogo() {
+  const telaInicial = document.getElementById('telaInicial');
+  const form = document.getElementById('customForm');
+  const musica = document.getElementById('musicaAmbiente');
+
+  // Mostrar/ocultar telas
+  if (telaInicial) telaInicial.style.display = 'none';
+  if (form) form.style.display = 'block';
+
+  // Parar música se estiver tocando
+  try {
+    if (musica && !musica.paused) {
+      musica.pause();
+      musica.currentTime = 0;
+    }
+  } catch (e) {
+    console.warn('Erro ao pausar a música:', e);
+  }
+}
+
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // start button: garante que o botão chame iniciarJogo()
+  var btn = document.getElementById('startButton') || document.querySelector('button[onclick*="iniciarJogo"]');
+  if (btn && !btn.id) btn.id = 'startButton';
+  if (btn) {
+    btn.addEventListener('click', function(e) {
+      try { iniciarJogo(); } catch (err) { console.error('Erro iniciarJogo:', err); }
+    });
+  }
+
+  // toggleMusica: play/pause com interação do usuário
+  var toggleMusica = document.getElementById('toggleMusica');
+  var musica = document.getElementById('musicaAmbiente');
+  if (toggleMusica && musica) {
+    toggleMusica.addEventListener('change', function() {
+      if (this.checked) {
+        // Tentar tocar - pode falhar se o navegador bloquear autoplay, mas como houve clique deve funcionar
+        musica.play().catch(function(e){ console.warn('Não foi possível tocar música:', e); });
+      } else {
+        musica.pause();
+        try { musica.currentTime = 0; } catch(e) {}
+      }
+    });
+  }
+
+  // garantir que o botão "Participar novamente" volte à tela inicial e limpe o formulário
+  var btnParticipar = document.querySelector('button[onclick*="limparFormulario"]') || document.querySelector('button.enviar');
+  if (btnParticipar) {
+    btnParticipar.addEventListener('click', function() {
+      try {
+        var telaInicial = document.getElementById('telaInicial');
+        var form = document.getElementById('customForm');
+        if (form) { form.style.display = 'none'; }
+        if (telaInicial) { telaInicial.style.display = 'block'; }
+        if (typeof limparFormulario === 'function') limparFormulario();
+      } catch(e){ console.warn(e); }
+    });
+  }
+
+  // se o form estiver escondido e houver um link direto para iniciar, exibir
+  var form = document.getElementById('customForm');
+  if (form && form.style.display === '') {
+    form.style.display = 'none';
+  }
+});
+</script>
+
 </body>
 </html>
