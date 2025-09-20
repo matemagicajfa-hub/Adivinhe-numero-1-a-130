@@ -206,7 +206,7 @@
     </label>
   </div>
   <audio id="musicaAmbiente" src="musica-ambiente.mp3" loop preload="auto"></audio>
-    <button onclick="iniciarJogo()" class="enviar">🚀 Iniciar jogo</button>
+    <button onclick="iniciarJogo()" class="enviar">🚀 Começar Matemágica</button>
   </div>
   <div class="progresso">
     <div id="progressoTexto">Pergunta 1 de 8</div>
@@ -895,6 +895,20 @@ if (toggleMusica) {
 }
 
 function iniciarJogo() {
+  const telaInicial = document.getElementById('telaInicial');
+  const form = document.getElementById('customForm');
+  const musica = document.getElementById('musicaAmbiente');
+
+  if (telaInicial) telaInicial.style.display = 'none';
+  if (form) form.style.display = 'block';
+
+  // Parar música se estiver tocando
+  if (musica && !musica.paused) {
+    musica.pause();
+    musica.currentTime = 0;
+  }
+}
+function iniciarJogo_old() {
   // Parar música ao iniciar jogo
   if (musica) {
     musica.pause();
