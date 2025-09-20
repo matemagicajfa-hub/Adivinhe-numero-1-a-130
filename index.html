@@ -1,10 +1,13 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
   <meta charset="utf-8"/>
   <title>Adivinhe o Número - Matemágica</title>
   <style>
     body {
+      position: relative;
+      overflow: hidden;
       font-family: Arial, sans-serif;
       padding: 20px;
       max-width: 1000px;
@@ -74,6 +77,76 @@
     input[type="radio"]:checked + label {
       background: #ff7043;
     }
+    .estrelas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      background: transparent;
+      pointer-events: none;
+    }
+    .estrela {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: white;
+      border-radius: 50%;
+      animation: piscar 2s infinite alternate;
+    }
+    @keyframes piscar {
+      from { opacity: 0.2; }
+      to { opacity: 1; }
+    }
+    .tela-inicial {
+      text-align: center;
+      padding: 50px 20px;
+      z-index: 2;
+      position: relative;
+    }
+    .tela-inicial h1 {
+      font-size: 2.5rem;
+      margin-bottom: 15px;
+    }
+    .tela-inicial p {
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+    }
+    .controle-musica {
+      margin-top: 15px;
+      font-size: 1rem;
+    }
+    .tela-inicial .avatares img {
+      width: 100px;
+      margin: 10px;
+    }
+    .progresso {
+      margin: 15px 0;
+      text-align: center;
+      font-size: 1rem;
+      color: #fff;
+      z-index: 2;
+      position: relative;
+    }
+    .barra {
+      background: rgba(255,255,255,0.2);
+      border-radius: 10px;
+      height: 15px;
+      width: 80%;
+      margin: 5px auto;
+    }
+    #progressoBarra {
+      height: 100%;
+      width: 12.5%;
+      background: #ffeb3b;
+      border-radius: 10px;
+    }
+    .controle-som {
+      text-align: center;
+      margin: 10px 0;
+      font-size: 1rem;
+    }
     .resultado {
       margin-top: 30px;
       font-size: 1.6rem;
@@ -119,6 +192,36 @@
   </style>
 </head>
 <body>
+  <div id="telaInicial" class="tela-inicial">
+    <h1>🎩 Matemágica ✨</h1>
+    <p>Bem-vindo! Pense em um número e tente a mágica conosco.</p>
+    <div class="avatares">
+      <img src="avatar_barba.png" alt="Mago com barba">
+      <img src="avatar_sem_barba.png" alt="Mago sem barba">
+    </div>
+  <div class="controle-musica">
+    <label>
+      <input type="checkbox" id="toggleMusica">
+      🔊 Música ambiente
+    </label>
+  </div>
+  <audio id="musicaAmbiente" src="musica-ambiente.mp3" loop preload="auto"></audio>
+    <button onclick="iniciarJogo()" class="enviar">🚀 Iniciar jogo</button>
+  </div>
+  <div class="progresso">
+    <div id="progressoTexto">Pergunta 1 de 8</div>
+    <div class="barra">
+      <div id="progressoBarra"></div>
+    </div>
+  </div>
+  <div class='controle-som'>
+    <label>
+      <input type='checkbox' id='toggleSom' checked>
+      🔊 Som mágico
+    </label>
+  </div>
+  <audio id='somMagico' src='som-magico.mp3' preload='auto'></audio>
+  <div class="estrelas"></div>
   <h2>✨ Matemágica - Adivinhe o Número (1-130) ✨</h2>
 
   <div class="avatar-box">
@@ -748,7 +851,61 @@
       synth.speak(utterance);
     }
 
-    const form = document.getElementById('customForm');
+    const estrelasContainer = document.querySelector('.estrelas');
+for (let i = 0; i < 80; i++) {
+  const estrela = document.createElement('div');
+  estrela.classList.add('estrela');
+  estrela.style.top = Math.random() * 100 + 'vh';
+  estrela.style.left = Math.random() * 100 + 'vw';
+  estrela.style.animationDuration = (1 + Math.random() * 3) + 's';
+  estrelasContainer.appendChild(estrela);
+}
+
+function atualizarProgresso() {
+  let respondidas = 0;
+  valores.forEach(v => {
+    let radios = document.getElementsByName(v.id);
+    radios.forEach(r => {
+      if (r.checked) respondidas++;
+    });
+  });
+  let texto = document.getElementById("progressoTexto");
+  let barra = document.getElementById("progressoBarra");
+  if (respondidas < valores.length) {
+    texto.textContent = `Pergunta ${respondidas+1} de ${valores.length}`;
+    barra.style.width = ((respondidas+1) / valores.length * 100) + "%";
+  } else {
+    texto.textContent = "Perguntas concluídas!";
+    barra.style.width = "100%";
+  }
+}
+
+const musica = document.getElementById('musicaAmbiente');
+const toggleMusica = document.getElementById('toggleMusica');
+
+if (toggleMusica) {
+  toggleMusica.addEventListener('change', function() {
+    if (this.checked) {
+      musica.play();
+    } else {
+      musica.pause();
+      musica.currentTime = 0;
+    }
+  });
+}
+
+function iniciarJogo() {
+  // Parar música ao iniciar jogo
+  if (musica) {
+    musica.pause();
+    musica.currentTime = 0;
+  }
+  document.getElementById('telaInicial').style.display = 'none';
+  document.getElementById('customForm').style.display = 'block';
+}
+
+const form = document.getElementById('customForm');
+form.style.display = 'none';
     const btn = document.getElementById('btnEnviar');
     const resultado = document.getElementById('resultado');
 
@@ -776,13 +933,28 @@
       });
 
       if (numero > 0) {
-        resultado.textContent = `🎉 O número que você pensou é: ${numero}`;
+        confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+      if (document.getElementById('toggleSom').checked) {
+        document.getElementById('somMagico').play();
+      }
+      resultado.innerHTML = `
+    🎩 <strong>O número que você pensou é o ${numero}!</strong><br><br>
+    🙌 Agradecemos a sua participação.<br>
+    👨‍🏫 Professores: Rafael Oliveira e Ronaldo Soares<br><br>
+    <button onclick="limparFormulario(); document.getElementById('customForm').style.display='none'; document.getElementById('telaInicial').style.display='block';" class="enviar">🔄 Participar novamente</button>
+  `;
       } else {
         resultado.textContent = "Selecione Sim/Não em todas as perguntas!";
         return;
       }
 
       form.submit();
+    }
+
+    function limparFormulario() {
+      form.reset();
+      resultado.textContent = 'Nenhum número escolhido ainda';
+    }
     });
   </script>
 
