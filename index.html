@@ -1,13 +1,10 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
   <meta charset="utf-8"/>
   <title>Adivinhe o Número - Matemágica</title>
   <style>
     body {
-      position: relative;
-      overflow: hidden;
       font-family: Arial, sans-serif;
       padding: 20px;
       max-width: 1000px;
@@ -77,76 +74,6 @@
     input[type="radio"]:checked + label {
       background: #ff7043;
     }
-    .estrelas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
-      background: transparent;
-      pointer-events: none;
-    }
-    .estrela {
-      position: absolute;
-      width: 2px;
-      height: 2px;
-      background: white;
-      border-radius: 50%;
-      animation: piscar 2s infinite alternate;
-    }
-    @keyframes piscar {
-      from { opacity: 0.2; }
-      to { opacity: 1; }
-    }
-    .tela-inicial {
-      text-align: center;
-      padding: 50px 20px;
-      z-index: 2;
-      position: relative;
-    }
-    .tela-inicial h1 {
-      font-size: 2.5rem;
-      margin-bottom: 15px;
-    }
-    .tela-inicial p {
-      font-size: 1.2rem;
-      margin-bottom: 20px;
-    }
-    .controle-musica {
-      margin-top: 15px;
-      font-size: 1rem;
-    }
-    .tela-inicial .avatares img {
-      width: 100px;
-      margin: 10px;
-    }
-    .progresso {
-      margin: 15px 0;
-      text-align: center;
-      font-size: 1rem;
-      color: #fff;
-      z-index: 2;
-      position: relative;
-    }
-    .barra {
-      background: rgba(255,255,255,0.2);
-      border-radius: 10px;
-      height: 15px;
-      width: 80%;
-      margin: 5px auto;
-    }
-    #progressoBarra {
-      height: 100%;
-      width: 12.5%;
-      background: #ffeb3b;
-      border-radius: 10px;
-    }
-    .controle-som {
-      text-align: center;
-      margin: 10px 0;
-      font-size: 1rem;
-    }
     .resultado {
       margin-top: 30px;
       font-size: 1.6rem;
@@ -192,36 +119,6 @@
   </style>
 </head>
 <body>
-  <div id="telaInicial" class="tela-inicial">
-    <h1>🎩 Matemágica ✨</h1>
-    <p>Bem-vindo! Pense em um número e tente a mágica conosco.</p>
-    <div class="avatares">
-      <img src="avatar_barba.png" alt="Mago com barba">
-      <img src="avatar_sem_barba.png" alt="Mago sem barba">
-    </div>
-  <div class="controle-musica">
-    <label>
-      <input type="checkbox" id="toggleMusica">
-      🔊 Música ambiente
-    </label>
-  </div>
-  <audio id="musicaAmbiente" src="musica-ambiente.mp3" loop preload="auto"></audio>
-    <button id="startButton" onclick="iniciarJogo()" class="enviar">🚀 Começar Matemágica</button>
-  </div>
-  <div class="progresso">
-    <div id="progressoTexto">Pergunta 1 de 8</div>
-    <div class="barra">
-      <div id="progressoBarra"></div>
-    </div>
-  </div>
-  <div class='controle-som'>
-    <label>
-      <input type='checkbox' id='toggleSom' checked>
-      🔊 Som mágico
-    </label>
-  </div>
-  <audio id='somMagico' src='som-magico.mp3' preload='auto'></audio>
-  <div class="estrelas"></div>
   <h2>✨ Matemágica - Adivinhe o Número (1-130) ✨</h2>
 
   <div class="avatar-box">
@@ -231,7 +128,7 @@
 
   <form id="customForm" method="POST"
         action="https://docs.google.com/forms/d/e/1FAIpQLScp_gUPeLbntdaivu9C7P3oIMCG1o8vtYqKq2FO8jMRmpXnkg/formResponse"
-        target="hidden_iframe" style="display:none;" >
+        target="hidden_iframe">
     
     <!-- Apenas Nome completo -->
     <div class="pergunta">
@@ -851,65 +748,7 @@
       synth.speak(utterance);
     }
 
-    const estrelasContainer = document.querySelector('.estrelas');
-for (let i = 0; i < 80; i++) {
-  const estrela = document.createElement('div');
-  estrela.classList.add('estrela');
-  estrela.style.top = Math.random() * 100 + 'vh';
-  estrela.style.left = Math.random() * 100 + 'vw';
-  estrela.style.animationDuration = (1 + Math.random() * 3) + 's';
-  estrelasContainer.appendChild(estrela);
-}
-
-function atualizarProgresso() {
-  let respondidas = 0;
-  valores.forEach(v => {
-    let radios = document.getElementsByName(v.id);
-    radios.forEach(r => {
-      if (r.checked) respondidas++;
-    });
-  });
-  let texto = document.getElementById("progressoTexto");
-  let barra = document.getElementById("progressoBarra");
-  if (respondidas < valores.length) {
-    texto.textContent = `Pergunta ${respondidas+1} de ${valores.length}`;
-    barra.style.width = ((respondidas+1) / valores.length * 100) + "%";
-  } else {
-    texto.textContent = "Perguntas concluídas!";
-    barra.style.width = "100%";
-  }
-}
-
-const musica = document.getElementById('musicaAmbiente');
-const toggleMusica = document.getElementById('toggleMusica');
-
-if (toggleMusica) {
-  toggleMusica.addEventListener('click', function() {
-    if (this.checked) {
-      musica.play().catch(e => console.log("Autoplay bloqueado, usuário precisa interagir."));
-    } else {
-      musica.pause();
-      musica.currentTime = 0;
-    }
-  });
-}
-  toggleMusica.addEventListener('change', function() {
-    if (this.checked) {
-      musica.play();
-    } else {
-      musica.pause();
-      musica.currentTime = 0;
-    }
-  });
-}
-
-}
-  document.getElementById('telaInicial').style.display = 'none';
-  document.getElementById('customForm').style.display = 'block';
-}
-
-const form = document.getElementById('customForm');
-form.style.display = 'none';
+    const form = document.getElementById('customForm');
     const btn = document.getElementById('btnEnviar');
     const resultado = document.getElementById('resultado');
 
@@ -937,112 +776,14 @@ form.style.display = 'none';
       });
 
       if (numero > 0) {
-        confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-      if (document.getElementById('toggleSom').checked) {
-        document.getElementById('somMagico').play();
-      }
-      resultado.innerHTML = `
-    🎩 <strong>O número que você pensou é o ${numero}!</strong><br><br>
-    🙌 Agradecemos a sua participação.<br>
-    👨‍🏫 Professores: Rafael Oliveira e Ronaldo Soares<br><br>
-    <button onclick="limparFormulario(); document.getElementById('customForm').style.display='none'; document.getElementById('telaInicial').style.display='block';" class="enviar">🔄 Participar novamente</button>
-  `;
+        resultado.textContent = `🎉 O número que você pensou é: ${numero}`;
       } else {
         resultado.textContent = "Selecione Sim/Não em todas as perguntas!";
         return;
       }
 
       form.submit();
-    }
-
-    function limparFormulario() {
-      form.reset();
-      resultado.textContent = 'Nenhum número escolhido ainda';
-    }
     });
   </script>
-
-  <!-- VLibras Plugin -->
-  <div vw class="enabled">
-    <div vw-access-button class="active"></div>
-    <div vw-plugin-wrapper>
-      <div class="vw-plugin-top-wrapper"></div>
-    </div>
-  </div>
-  <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
-  <script>
-    new window.VLibras.Widget('https://vlibras.gov.br/app');
-  
-
-function iniciarJogo() {
-  const telaInicial = document.getElementById('telaInicial');
-  const form = document.getElementById('customForm');
-  const musica = document.getElementById('musicaAmbiente');
-
-  // Mostrar/ocultar telas
-  if (telaInicial) telaInicial.style.display = 'none';
-  if (form) form.style.display = 'block';
-
-  // Parar música se estiver tocando
-  try {
-    if (musica && !musica.paused) {
-      musica.pause();
-      musica.currentTime = 0;
-    }
-  } catch (e) {
-    console.warn('Erro ao pausar a música:', e);
-  }
-}
-
-</script>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  // start button: garante que o botão chame iniciarJogo()
-  var btn = document.getElementById('startButton') || document.querySelector('button[onclick*="iniciarJogo"]');
-  if (btn && !btn.id) btn.id = 'startButton';
-  if (btn) {
-    btn.addEventListener('click', function(e) {
-      try { iniciarJogo(); } catch (err) { console.error('Erro iniciarJogo:', err); }
-    });
-  }
-
-  // toggleMusica: play/pause com interação do usuário
-  var toggleMusica = document.getElementById('toggleMusica');
-  var musica = document.getElementById('musicaAmbiente');
-  if (toggleMusica && musica) {
-    toggleMusica.addEventListener('change', function() {
-      if (this.checked) {
-        // Tentar tocar - pode falhar se o navegador bloquear autoplay, mas como houve clique deve funcionar
-        musica.play().catch(function(e){ console.warn('Não foi possível tocar música:', e); });
-      } else {
-        musica.pause();
-        try { musica.currentTime = 0; } catch(e) {}
-      }
-    });
-  }
-
-  // garantir que o botão "Participar novamente" volte à tela inicial e limpe o formulário
-  var btnParticipar = document.querySelector('button[onclick*="limparFormulario"]') || document.querySelector('button.enviar');
-  if (btnParticipar) {
-    btnParticipar.addEventListener('click', function() {
-      try {
-        var telaInicial = document.getElementById('telaInicial');
-        var form = document.getElementById('customForm');
-        if (form) { form.style.display = 'none'; }
-        if (telaInicial) { telaInicial.style.display = 'block'; }
-        if (typeof limparFormulario === 'function') limparFormulario();
-      } catch(e){ console.warn(e); }
-    });
-  }
-
-  // se o form estiver escondido e houver um link direto para iniciar, exibir
-  var form = document.getElementById('customForm');
-  if (form && form.style.display === '') {
-    form.style.display = 'none';
-  }
-});
-</script>
-
 </body>
 </html>
