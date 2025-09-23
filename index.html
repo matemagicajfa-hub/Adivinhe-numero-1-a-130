@@ -775,12 +775,42 @@
       }
     }
 </script>
-     }
-    function participarNovamente(){
+      function participarNovamente(){
       document.getElementById('formCartas').reset();
       document.getElementById('resultado').textContent = 'Nenhuma carta revelada ainda';
       window.scrollTo({top:0, behavior:'smooth'});
     }
+
+    // ===== Função de narração =====
+    function narrar(texto) {
+      window.speechSynthesis.cancel();
+      const fala = new SpeechSynthesisUtterance(texto);
+      fala.lang = 'pt-BR';
+      window.speechSynthesis.speak(fala);
+    }
+
+    // ===== Exibir resultado e botão de áudio =====
+    function mostrarResultado(numeroDescoberto) {
+      const resultado = document.getElementById('resultado');
+      resultado.innerHTML = `
+        🎉 O número que você pensou é <b>${numeroDescoberto}</b>! 
+        <button id="btnRepetirAudio" style="margin-left:10px; cursor:pointer;">🔊</button>
+        <br><br>
+        <button onclick="participarNovamente()" class="enviar">🔄 Participar novamente</button>
+      `;
+
+      // dispara confete
+      confetti({ particleCount: 160, spread: 80, origin: { y: 0.6 } });
+
+      // fala o resultado automaticamente
+      narrar("O número que você pensou é " + numeroDescoberto);
+
+      // adiciona evento ao botão 🔊
+      document.getElementById("btnRepetirAudio").addEventListener("click", () => {
+        narrar("O número que você pensou é " + numeroDescoberto);
+      });
+    }
+
     // estrelas cintilando
     (function(){
       var container = document.querySelector('.estrelas');
