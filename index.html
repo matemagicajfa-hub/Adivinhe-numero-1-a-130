@@ -715,7 +715,7 @@
   </script>
 
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
- <script>
+  <script>
     function mostrarResultado(){
       var numero = 0;
 
@@ -760,72 +760,36 @@
       if(marked8 === 'sim') numero += 128;
     
       if(numero>0){
-        const resultadoTexto = '🎩 O número que você pensou é o ' + numero + '!';
-        document.getElementById('resultado').innerHTML = resultadoTexto + '<br><br>🙌 Agradecemos a sua participação.<br>👨‍🏫 Professores: Rafael Oliveira e Ronaldo Soares<br><br><button onclick="participarNovamente()" class="enviar">🔄 Participar novamente</button>';
-        
-        // 🎤 Leitura em voz
-        const fala = new SpeechSynthesisUtterance("O número que você pensou é o " + numero);
-        fala.lang = "pt-BR";
-        window.speechSynthesis.cancel();
-        window.speechSynthesis.speak(fala);
-
+        document.getElementById('resultado').innerHTML = '🎩 <strong>O número que você pensou é o ' + numero + '!</strong><br><br>🙌 Agradecemos a sua participação.<br>👨‍🏫 Professores: Rafael Oliveira e Ronaldo Soares<br><br><button onclick="participarNovamente()" class="enviar">🔄 Participar novamente</button>';
         confetti({ particleCount: 160, spread: 80, origin: { y: 0.6 } });
       } else {
         document.getElementById('resultado').innerHTML = 'Por favor, responda todas as perguntas.<br><br><button onclick="participarNovamente()" class="enviar">🔄 Participar novamente</button>';
       }
     }
-<script>
-  // ===== Função de narração =====
-  function narrar(texto) {
-    window.speechSynthesis.cancel();
-    const fala = new SpeechSynthesisUtterance(texto);
-    fala.lang = 'pt-BR';
-    window.speechSynthesis.speak(fala);
-  }
 
-  // ===== Exibir resultado e botão de áudio =====
-  function mostrarResultado(numeroDescoberto) {
-    const resultado = document.getElementById('resultado');
-    resultado.innerHTML = `
-      🎉 O número que você pensou é <b>${numeroDescoberto}</b>! 
-      <button id="btnRepetirAudio" style="margin-left:10px; cursor:pointer;">🔊</button>
-      <br><br>
-      <button onclick="participarNovamente()" class="enviar">🔄 Participar novamente</button>
-    `;
-
-    // dispara confete
-    confetti({
-      particleCount: 160,
-      spread: 80,
-      origin: { y: 0.6 }
-    });
-
-    // fala o resultado automaticamente
-    narrar("O número que você pensou é " + numeroDescoberto);
-
-    // adiciona evento ao botão 🔊
-    document.getElementById("btnRepetirAudio").addEventListener("click", () => {
-      narrar("O número que você pensou é " + numeroDescoberto);
-    });
-  }
-
-  // ===== Estrelas cintilando =====
-  (function(){
-    var container = document.querySelector('.estrelas');
-    for(var i=0;i<80;i++){
-      var s = document.createElement('div');
-      s.className='estrela';
-      s.style.top=(Math.random()*100)+'vh';
-      s.style.left=(Math.random()*100)+'vw';
-      s.style.width=(1+Math.random()*3)+'px';
-      s.style.height=s.style.width;
-      s.style.background='rgba(255,255,255,'+(0.2+Math.random()*0.8)+')';
-      s.style.position='absolute';
-      s.style.borderRadius='50%';
-      s.style.animation='piscar '+(1+Math.random()*3)+'s infinite alternate';
-      container.appendChild(s);
+    function participarNovamente(){
+      document.getElementById('customForm').reset();
+      document.getElementById('resultado').textContent = 'Nenhum número escolhido ainda';
+      window.scrollTo({top:0, behavior:'smooth'});
     }
-  })();
-</script>
+
+    // estrelas cintilando
+    (function(){
+      var container = document.querySelector('.estrelas');
+      for(var i=0;i<80;i++){
+        var s = document.createElement('div');
+        s.className='estrela';
+        s.style.top=(Math.random()*100)+'vh';
+        s.style.left=(Math.random()*100)+'vw';
+        s.style.width=(1+Math.random()*3)+'px';
+        s.style.height=s.style.width;
+        s.style.background='rgba(255,255,255,'+(0.2+Math.random()*0.8)+')';
+        s.style.position='absolute';
+        s.style.borderRadius='50%';
+        s.style.animation='piscar '+(1+Math.random()*3)+'s infinite alternate';
+        container.appendChild(s);
+      }
+    })();
+  </script>
 </body>
 </html>
