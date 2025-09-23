@@ -775,13 +775,12 @@
       }
     }
 </script>
-
+     }
     function participarNovamente(){
-      document.getElementById('customForm').reset();
-      document.getElementById('resultado').textContent = 'Nenhum número escolhido ainda';
+      document.getElementById('formCartas').reset();
+      document.getElementById('resultado').textContent = 'Nenhuma carta revelada ainda';
       window.scrollTo({top:0, behavior:'smooth'});
     }
-
     // estrelas cintilando
     (function(){
       var container = document.querySelector('.estrelas');
