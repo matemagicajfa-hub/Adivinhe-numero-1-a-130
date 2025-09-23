@@ -715,7 +715,7 @@
   </script>
 
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
-  <script>
+ <script>
     function mostrarResultado(){
       var numero = 0;
 
@@ -760,12 +760,21 @@
       if(marked8 === 'sim') numero += 128;
     
       if(numero>0){
-        document.getElementById('resultado').innerHTML = '🎩 <strong>O número que você pensou é o ' + numero + '!</strong><br><br>🙌 Agradecemos a sua participação.<br>👨‍🏫 Professores: Rafael Oliveira e Ronaldo Soares<br><br><button onclick="participarNovamente()" class="enviar">🔄 Participar novamente</button>';
+        const resultadoTexto = '🎩 O número que você pensou é o ' + numero + '!';
+        document.getElementById('resultado').innerHTML = resultadoTexto + '<br><br>🙌 Agradecemos a sua participação.<br>👨‍🏫 Professores: Rafael Oliveira e Ronaldo Soares<br><br><button onclick="participarNovamente()" class="enviar">🔄 Participar novamente</button>';
+        
+        // 🎤 Leitura em voz
+        const fala = new SpeechSynthesisUtterance("O número que você pensou é o " + numero);
+        fala.lang = "pt-BR";
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(fala);
+
         confetti({ particleCount: 160, spread: 80, origin: { y: 0.6 } });
       } else {
         document.getElementById('resultado').innerHTML = 'Por favor, responda todas as perguntas.<br><br><button onclick="participarNovamente()" class="enviar">🔄 Participar novamente</button>';
       }
     }
+</script>
 
     function participarNovamente(){
       document.getElementById('customForm').reset();
